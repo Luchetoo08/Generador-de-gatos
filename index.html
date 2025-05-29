@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API DE GATO</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Gatitos</h1>
+
+        <div class="buttons">
+            <button id="get-cat-btn">Obtener Gatito</button>
+            <button id="clear-cat-btn">Eliminar Gatito</button>
+        </div>
+
+        <div id="copy-container">
+            <button id="copy-btn" class="copy-btn" style="display: none;">Copiar Imagen</button>
+        </div>
+
+        <div id="cat-container">
+            <!-- Imagen del gatito irá aquí -->
+        </div>
+    </div>
+
+    <script>
+        let currentImageUrl = "";
+
+        function getCat() {
+            fetch('https://api.thecatapi.com/v1/images/search')
+                .then(response => response.json())
+                .then(data => {
+                    const imageUrl = data[0].url;
+                    currentImageUrl = imageUrl;
+
+                    // Mostrar botón de copiar
+                    document.getElementById('copy-btn').style.display = 'inline-block';
+
+                    // Agregar imagen
+                    const container = document.getElementById('cat-container');
+                    container.innerHTML = '';
+
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                    img.alt = "Gatito";
+
+                    container.appendChild(img);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function clearCats() {
+            document.getElementById('cat-container').innerHTML = '';
+            document.getElementById('copy-btn').style.display = 'none';
+            currentImageUrl = "";
+        }
+
+        function copyImageUrl() {
+            if (currentImageUrl) {
+                navigator.clipboard.writeText(currentImageUrl)
+                    .then(() => alert("Enlace copiado al portapapeles"))
+                    .catch(() => alert("Error al copiar el enlace"));
+            }
+        }
+
+        document.getElementById('get-cat-btn').addEventListener('click', getCat);
+        document.getElementById('clear-cat-btn').addEventListener('click', clearCats);
+        document.getElementById('copy-btn').addEventListener('click', copyImageUrl);
+    </script>
+</body>
+</html>
